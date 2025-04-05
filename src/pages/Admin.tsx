@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { mockUsers, mockProducts, getCurrentUser, banUser, unbanUser, deleteProduct } from "@/lib/data";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import { Ban, Trash2, CheckCircle, XCircle } from "lucide-react";
 import {

@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getProductById, getCurrentUser, markProductAsSold } from "@/lib/data";
 import { Product } from "@/lib/types";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import { MapPin, Phone, Calendar, CheckCircle, AlertTriangle } from "lucide-react";
 

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { mockCategories, createProduct, markProductAsPaid } from "@/lib/data";
 import { getCurrentUser } from "@/lib/data";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 type ProductFormProps = {
   onSuccess?: () => void;

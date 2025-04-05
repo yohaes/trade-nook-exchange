@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { getCurrentUser, mockProducts, markProductAsSold, deleteProduct } from "@/lib/data";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import { Plus, Edit, CheckCircle, Trash2 } from "lucide-react";
 import {

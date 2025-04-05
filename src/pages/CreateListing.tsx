@@ -5,7 +5,7 @@ import ProductForm from "@/components/ProductForm";
 import Navbar from "@/components/Navbar";
 import { getCurrentUser } from "@/lib/data";
 import { useEffect } from "react";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 const CreateListing = () => {
   const navigate = useNavigate();
