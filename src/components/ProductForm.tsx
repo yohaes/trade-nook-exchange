@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { mockCategories, createProduct, markProductAsPaid } from "@/lib/data";
 import { getCurrentUser } from "@/lib/data";
 import { toast } from "sonner";
+import { Upload, ImageIcon, X } from "lucide-react";
 
 type ProductFormProps = {
   onSuccess?: () => void;
@@ -23,6 +25,7 @@ type ProductFormProps = {
 const ProductForm = ({ onSuccess }: ProductFormProps) => {
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
     title: "",
@@ -38,6 +41,9 @@ const ProductForm = ({ onSuccess }: ProductFormProps) => {
     paymentProcessing: false,
   });
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -49,12 +55,38 @@ const ProductForm = ({ onSuccess }: ProductFormProps) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+      
+      // Create a preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
   const isFormValid = () => {
     return (
       formData.title &&
       formData.description &&
       formData.price &&
-      formData.imageUrl &&
+      (imageFile || formData.imageUrl) &&
       formData.category &&
       formData.condition &&
       formData.location &&
@@ -89,6 +121,10 @@ const ProductForm = ({ onSuccess }: ProductFormProps) => {
     e.preventDefault();
     setFormData((prev) => ({ ...prev, paymentProcessing: true }));
 
+    // In a real implementation, we would upload the image to the server here
+    // For now, we'll just use the preview URL or the entered URL
+    const finalImageUrl = imagePreview || formData.imageUrl;
+
     // Simulate payment processing
     setTimeout(() => {
       try {
@@ -97,7 +133,7 @@ const ProductForm = ({ onSuccess }: ProductFormProps) => {
           title: formData.title,
           description: formData.description,
           price: parseFloat(formData.price),
-          imageUrl: formData.imageUrl,
+          imageUrl: finalImageUrl,
           category: formData.category,
           condition: formData.condition as any,
           location: formData.location,
@@ -233,16 +269,56 @@ const ProductForm = ({ onSuccess }: ProductFormProps) => {
         />
       </div>
 
-      <div>
-        <Label htmlFor="imageUrl">Image URL</Label>
-        <Input
-          id="imageUrl"
-          name="imageUrl"
-          value={formData.imageUrl}
-          onChange={handleChange}
-          placeholder="https://example.com/image.jpg"
-          required
+      <div className="space-y-2">
+        <Label>Product Image</Label>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="hidden"
+          accept="image/*"
         />
+
+        {!imagePreview ? (
+          <div className="grid grid-cols-1 gap-4">
+            <div
+              onClick={triggerFileInput}
+              className="border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center cursor-pointer hover:border-primary"
+            >
+              <Upload className="h-10 w-10 text-gray-400 mb-2" />
+              <p className="text-sm text-gray-500">Click to upload an image</p>
+              <p className="text-xs text-gray-400 mt-1">JPG, PNG or GIF up to 5MB</p>
+            </div>
+            
+            <div>
+              <Label htmlFor="imageUrl">Or provide an image URL</Label>
+              <Input
+                id="imageUrl"
+                name="imageUrl"
+                value={formData.imageUrl}
+                onChange={handleChange}
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="relative">
+            <img
+              src={imagePreview}
+              alt="Product preview"
+              className="w-full h-64 object-cover rounded-md"
+            />
+            <Button
+              type="button"
+              variant="destructive"
+              size="icon"
+              className="absolute top-2 right-2 h-8 w-8 rounded-full"
+              onClick={handleRemoveImage}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
